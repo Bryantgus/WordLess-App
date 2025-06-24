@@ -1,11 +1,13 @@
 import Header from "./components/Header";
-import Word from "./components/Word";
+import AllAttemptsWords from "./components/AllAttemptsWords";
+import Keyboard from "./components/keyboard";
 
 export default function App() {
   return (
     <div>
       <Header />
-      <Word />
+      <AllAttemptsWords />
+      <Keyboard />
     </div>
   )
 }
