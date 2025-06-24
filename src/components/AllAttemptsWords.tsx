@@ -1,24 +1,47 @@
-import Word from "./Word";
+import Attempts from "./Attempts";
+import { generateAttempts } from "../utils/logic";
+import { useEffect, useState } from "react";
+import React from "react";
 
-export default function AllAttemptsWords() {
-  const infoWord = [
-    { key: 1, letter: "b", isFill: true, isCorrect: 1, wasAnswer: true },
-    { key: 2, letter: "a", isFill: true, isCorrect: 0, wasAnswer: false },
-    { key: 3, letter: "a", isFill: true, isCorrect: 2, wasAnswer: false },
-    { key: 4, letter: "a", isFill: true, isCorrect: 2, wasAnswer: false },
-    { key: 5, letter: "", isFill: false, isCorrect: 0, wasAnswer: false },
-
-  ]
-
-
-  return (
-    <div className="mt-12 flex flex-col gap-2">
-      <Word word={infoWord} />
-      <Word word={infoWord} />
-      <Word word={infoWord} />
-      <Word word={infoWord} />
-      <Word word={infoWord} />
-      <Word word={infoWord} />
-    </div>
-  )
+type AttemptLetter = {
+  key: number
+  letter: string
+  isFill: boolean
+  isCorrect: number
+  wasAnswer: boolean
 }
+
+type AllAttemptsWords = {
+  wordLength: number,
+  attemptsLength: number,
+  sendingAttemptsToFather: (attempts: AttemptLetter[][]) => void
+}
+
+export const AllAttemptsWords = React.memo(
+  function ({ wordLength, attemptsLength, sendingAttemptsToFather }: AllAttemptsWords) {
+
+    const [attempts, setAttempts] = useState(
+      generateAttempts(wordLength, attemptsLength)
+    )
+
+    useEffect(() => {
+      const newAttempts = generateAttempts(wordLength, attemptsLength)
+      setAttempts(newAttempts)
+      sendingAttemptsToFather(newAttempts)
+    }, [attemptsLength, wordLength, sendingAttemptsToFather])
+
+    
+
+    return (
+      <div className="mt-2 flex flex-col gap-2">
+        {attempts.map((item, index) => {
+          return (
+            <Attempts key={index + 1} word={item} />
+
+          )
+        })}
+
+      </div>
+    )
+  }
+)
