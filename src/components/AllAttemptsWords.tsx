@@ -1,47 +1,37 @@
+import React, { useContext, useEffect } from "react";
 import Attempts from "./Attempts";
+import Loading from "./Loading";
 import { generateAttempts } from "../utils/logic";
-import { useEffect, useState } from "react";
-import React from "react";
+import { AttemptsContext } from "../hook/AttemptsContext";
 
-type AttemptLetter = {
-  key: number
-  letter: string
-  isFill: boolean
-  isCorrect: number
-  wasAnswer: boolean
-}
+type AllAttemptsWordsProps = {
+  word: string;
+  attemptsLength: number;
+};
 
-type AllAttemptsWords = {
-  word: string,
-  attemptsLength: number,
-  sendingAttemptsToFather: (attempts: AttemptLetter[][]) => void
-}
+export const AllAttemptsWords = React.memo(function AllAttemptsWords({
+  word,
+  attemptsLength,
+}: AllAttemptsWordsProps) {
+  const attemptsContext = useContext(AttemptsContext);
+  const attempts = attemptsContext?.attempts;
+  const setAttempts = attemptsContext?.setAttempts;
 
-export const AllAttemptsWords = React.memo(
-  function ({ word, attemptsLength, sendingAttemptsToFather }: AllAttemptsWords) {
+  useEffect(() => {
+    if (!setAttempts) return;
+    const newAttempts = generateAttempts(word.length, attemptsLength);
+    setAttempts(newAttempts);
+  }, [attemptsLength, word, setAttempts]);
 
-    const [attempts, setAttempts] = useState(
-      generateAttempts(word.length, attemptsLength)
-    )
-
-    useEffect(() => {
-      const newAttempts = generateAttempts(word.length, attemptsLength)
-      setAttempts(newAttempts)
-      sendingAttemptsToFather(newAttempts)
-    }, [attemptsLength, word, sendingAttemptsToFather])
-
-    
-
-    return (
-      <div className="mt-2 flex flex-col gap-2">
-        {attempts.map((item, index) => {
-          return (
-            <Attempts key={index + 1} word={item} />
-
-          )
-        })}
-
-      </div>
-    )
+  if (!attempts) {
+    return <Loading />;
   }
-)
+
+  return (
+    <div className="mt-2 flex flex-col gap-2">
+      {attempts.map((item, index) => (
+        <Attempts key={index + 1} word={item} />
+      ))}
+    </div>
+  );
+});

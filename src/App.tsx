@@ -1,12 +1,12 @@
 import { Header } from "./components/Header";
 import { AllAttemptsWords } from "./components/AllAttemptsWords";
 import Keyboard from "./components/Keyboard";
-import { useCallback, useEffect, useState } from "react";
-import { generateRandomWord } from "./utils/logic";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { generateRandomWord, removeLastWord } from "./utils/logic";
 import { KeyPressedContext } from "./hook/KeyPressedContext";
+import { AttemptsContext } from "./hook/AttemptsContext";
 
 type AttemptLetter = {
-  key: number
   letter: string
   isFill: boolean
   isCorrect: number
@@ -16,43 +16,83 @@ type AttemptLetter = {
 export default function App() {
 
   const [key, setKey] = useState<string>('') //Global State listen onClick on key component
-  const [myWord, setMyWord] = useState<string>('')
-  const [randomWord, setRandomWord] = useState<string>(generateRandomWord(2))
+  const [randomWord, setRandomWord] = useState<string>(generateRandomWord(6))
   const [attemptsLength, setAttemptsLength] = useState(6)
-  const [attempts, setAttempts] = useState<AttemptLetter[][]>()
+  const [attempts, setAttempts] = useState<AttemptLetter[][]>([])
   const [attempsPos, setAttemptsPos] = useState<number>(0)
-  const [letterPos, setLetterPos] = useState<number>(0)
+  const [myWord, setMyWord] = useState<string>('')
+  const prevMyWord = useRef<string>('')
 
 
-
-  const handleAttempts = useCallback((attemptsData: AttemptLetter[][]) => {
-    setAttempts(attemptsData);
-    console.log("Intentos recibidos:", attemptsData);
-  }, []);
-
+  //Modifying keyPressed(button)
   useEffect(() => {
+    if (key === 'del') {
+      setMyWord(prev => removeLastWord(prev))
+    } else if (key === 'submit') {
+      console.log("submit");
+    } else {
+      setMyWord(prev => {
+        if (prev.length < randomWord.length) {
+          prevMyWord.current = prev
+          return prev + key
+        } else {
+          return prev
+        }
+      }) 
+    }
 
-    setMyWord(prev => {
-      if (prev.length < randomWord.length) {
-        return prev + key
-      } else {
-        return prev
-      }
-    })
     setKey('')
+
   }, [key, randomWord.length])
 
-
-
-
+  //Modifying current attempt
   useEffect(() => {
-    console.log(myWord, "word");
-  }, [myWord])
+    const letterIndex = myWord.length - 1
+    const deleted = myWord.length < prevMyWord.current.length
+    // if (letterIndex === -1) {
+    //   letterIndex = 0
+    // }
+
+    setAttempts(prev => {
+      //All attempts
+      const allAttempts = [...prev]
+      console.log(allAttempts);
+
+
+      //Current attempt
+      const currentAttemptToModify = [...allAttempts[attempsPos]]
+
+      let currentLetterToModify: AttemptLetter
+
+      //Modifying properties of letter
+      if (!deleted) {
+        currentLetterToModify = { ...currentAttemptToModify[letterIndex] }
+        currentLetterToModify.letter = myWord.charAt(letterIndex)
+        currentLetterToModify.isFill = true
+      } else {
+        currentLetterToModify = { ...currentAttemptToModify[letterIndex + 1] }
+        currentLetterToModify.letter = ''
+        currentLetterToModify.isFill = false
+      }
+
+      //Modifying current attempts with the new changes on letter
+      currentAttemptToModify[deleted ? letterIndex + 1 : letterIndex] = currentLetterToModify
+
+      //Pushing the attempt modified into its position
+      allAttempts[attempsPos] = currentAttemptToModify
+
+      return allAttempts
+    })
+    prevMyWord.current = myWord
+
+  }, [myWord ,randomWord.length, attempsPos])
 
   return (
     <div>
       <Header />
-      <AllAttemptsWords word={randomWord} attemptsLength={attemptsLength} sendingAttemptsToFather={handleAttempts} />
+      <AttemptsContext.Provider value={{ attempts, setAttempts }}>
+        <AllAttemptsWords word={randomWord} attemptsLength={attemptsLength} />
+      </AttemptsContext.Provider>
       <KeyPressedContext.Provider value={{ key, setKey }}>
         <Keyboard />
       </KeyPressedContext.Provider>

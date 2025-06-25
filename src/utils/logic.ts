@@ -10,8 +10,7 @@ export const generateRandomWord = (letters: number) => {
 }
 
 const generateWordBox = (letters: number) => {
-  return Array.from({ length: letters }, (_, index) => ({
-    key: index + 1,
+  return Array.from({ length: letters }, () => ({
     letter: '',
     isFill: false,
     isCorrect: 0,
@@ -23,4 +22,10 @@ export const generateAttempts = (letters: number, attempts: number) => {
   return Array.from({ length: attempts }, () => {
     return generateWordBox(letters)
   })
+}
+
+export const removeLastWord = (word: string) => {
+  const wordSplited = word.split('')
+  wordSplited.pop()
+  return wordSplited.join('')
 }
