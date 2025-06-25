@@ -12,23 +12,23 @@ type AttemptLetter = {
 }
 
 type AllAttemptsWords = {
-  wordLength: number,
+  word: string,
   attemptsLength: number,
   sendingAttemptsToFather: (attempts: AttemptLetter[][]) => void
 }
 
 export const AllAttemptsWords = React.memo(
-  function ({ wordLength, attemptsLength, sendingAttemptsToFather }: AllAttemptsWords) {
+  function ({ word, attemptsLength, sendingAttemptsToFather }: AllAttemptsWords) {
 
     const [attempts, setAttempts] = useState(
-      generateAttempts(wordLength, attemptsLength)
+      generateAttempts(word.length, attemptsLength)
     )
 
     useEffect(() => {
-      const newAttempts = generateAttempts(wordLength, attemptsLength)
+      const newAttempts = generateAttempts(word.length, attemptsLength)
       setAttempts(newAttempts)
       sendingAttemptsToFather(newAttempts)
-    }, [attemptsLength, wordLength, sendingAttemptsToFather])
+    }, [attemptsLength, word, sendingAttemptsToFather])
 
     
 

@@ -16,7 +16,7 @@ export default function Keyboard() {
                         <Key
                             key={key}
                             Inputkey={item}
-                            wasUsed={true}
+                            wasUsed={false}
                         />
                     );
                 })}
@@ -27,7 +27,7 @@ export default function Keyboard() {
                         <Key
                             key={key}
                             Inputkey={item}
-                            wasUsed={true}
+                            wasUsed={false}
                         />
                     );
                 })}
@@ -39,7 +39,7 @@ export default function Keyboard() {
                         <Key
                             key={key}
                             Inputkey={item}
-                            wasUsed={true}
+                            wasUsed={false}
                         />
                     );
                 })}
