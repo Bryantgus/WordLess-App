@@ -40,7 +40,7 @@ export default function Keyboard() {
             <div className='flex justify-center items-center gap-1'>
                 <div 
                     className='w-[80px] cursor-pointer uppercase font-bold text-l flex justify-center items-center bg-white-300 h-[60px] rounded border border-yellow-800 hover:border-blue-500 hover:border-2'
-                    onClick={() => {setKey("submit")}}
+                    onClick={() => {setKey("Enter")}}
                     >
                     Enter
                     </div>
@@ -55,7 +55,7 @@ export default function Keyboard() {
                 })}
                 <div 
                     className='w-[60px] cursor-pointer font-bold flex justify-center items-center bg-white-300 h-[60px] rounded border border-yellow-800 hover:border-blue-500 hover:border-2'
-                    onClick={() => {setKey("del")}}
+                    onClick={() => {setKey("Delete")}}
                     >
                     <img src="/delete-key.svg" alt="" />
                 </div>

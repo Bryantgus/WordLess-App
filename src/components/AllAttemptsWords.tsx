@@ -4,24 +4,18 @@ import Loading from "./Loading";
 import { generateAttempts } from "../utils/logic";
 import { AttemptsContext } from "../hook/AttemptsContext";
 
+type AttemptLetter = {
+  letter: string
+  isFill: boolean
+  isCorrect: number
+  wasAnswer: boolean
+}
+
 type AllAttemptsWordsProps = {
-  word: string;
-  attemptsLength: number;
+  attempts: AttemptLetter[][]
 };
 
-export const AllAttemptsWords = React.memo(function AllAttemptsWords({
-  word,
-  attemptsLength,
-}: AllAttemptsWordsProps) {
-  const attemptsContext = useContext(AttemptsContext);
-  const attempts = attemptsContext?.attempts;
-  const setAttempts = attemptsContext?.setAttempts;
-
-  useEffect(() => {
-    if (!setAttempts) return;
-    const newAttempts = generateAttempts(word.length, attemptsLength);
-    setAttempts(newAttempts);
-  }, [attemptsLength, word, setAttempts]);
+export const AllAttemptsWords = React.memo(function AllAttemptsWords({attempts}: AllAttemptsWordsProps) {
 
   if (!attempts) {
     return <Loading />;
