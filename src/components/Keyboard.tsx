@@ -55,7 +55,7 @@ export default function Keyboard() {
                 })}
                 <div 
                     className='w-[60px] cursor-pointer font-bold flex justify-center items-center bg-white-300 h-[60px] rounded border border-yellow-800 hover:border-blue-500 hover:border-2'
-                    onClick={() => {setKey("Delete")}}
+                    onClick={() => {setKey("Backspace")}}
                     >
                     <img src="/delete-key.svg" alt="" />
                 </div>

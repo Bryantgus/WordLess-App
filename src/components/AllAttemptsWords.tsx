@@ -1,8 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import Attempts from "./Attempts";
 import Loading from "./Loading";
-import { generateAttempts } from "../utils/logic";
-import { AttemptsContext } from "../hook/AttemptsContext";
 
 type AttemptLetter = {
   letter: string

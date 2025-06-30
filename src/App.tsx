@@ -15,13 +15,12 @@ type AttemptLetter = {
 
 export default function App() {
 
-  const isFirstRender = useRef([true, true]);
-
   const [key, setKey] = useState<string>('') //Global State listen onClick on key component
   const [randomWord, setRandomWord] = useState<string>(generateRandomWord(6).toUpperCase())
   const [attemptsLength, setAttemptsLength] = useState(6)
   const [attempts, setAttempts] = useState<AttemptLetter[][]>([])
-  const [attempsPos, setAttemptsPos] = useState<number>(0)
+  const [attemptsPos, setAttemptsPos] = useState<number>(0)
+  const PrevAttemptPos = useRef<number>(0)
   const [myWord, setMyWord] = useState<string>('')
   const prevMyWord = useRef<string>('')
 
@@ -54,11 +53,6 @@ export default function App() {
 
   //Modifying keyPressed(button)
   useEffect(() => {
-
-    if (isFirstRender.current[0]) {
-      isFirstRender.current[0] = false;
-      return;
-    }
 
     if (key === 'Backspace') {
       setMyWord(prev => removeLastWord(prev))
@@ -116,13 +110,13 @@ export default function App() {
           // console.log(attempModify);
 
         });
-        currentAttempts[attempsPos] = attempModify
+        currentAttempts[attemptsPos] = attempModify
         return currentAttempts
       })
 
       setMyWord('')
 
-    } else {
+    } else if (/[a-zA-Z]/.test(key)) {
       setMyWord(prev => {
         if (prev.length < randomWord.length) {
           prevMyWord.current = prev + key.toUpperCase()
@@ -132,56 +126,55 @@ export default function App() {
         }
       })
     }
-
     setKey('')
-
-  }, [attempsPos, key, randomWord])
+  }, [attemptsPos, key, randomWord])
 
   // //Modifying current attempt
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   if (isFirstRender.current[1]) {
-  //     isFirstRender.current[1] = false;
-  //     return;
-  //   }
+    if (attemptsPos !== PrevAttemptPos.current) return
 
-  //   const letterIndex = myWord.length - 1
-  //   const deleted = myWord.length < prevMyWord.current.length
 
-  //   setAttempts(prev => {
+    const letterIndex = myWord.length - 1
+    console.log(letterIndex, "Index");
 
-  //     //All attempts
-  //     const allAttempts = [...prev]
+    const deleted = myWord.length < prevMyWord.current.length
+    console.log(deleted);
 
-  //     //Current attempt
-  //     const currentAttemptToModify = [...allAttempts[attempsPos]]
-  //     if (!currentAttemptToModify[letterIndex]) return allAttempts;
+    setAttempts(prev => {
 
-  //     let currentLetterToModify: AttemptLetter
+      //All attempts
+      const allAttempts = [...prev]
 
-  //     //Modifying properties of letter
-  //     if (!deleted) {
-  //       currentLetterToModify = { ...currentAttemptToModify[letterIndex] }
-  //       currentLetterToModify.letter = myWord.charAt(letterIndex)
-  //       currentLetterToModify.isFill = true
-  //     } else {
-  //       currentLetterToModify = { ...currentAttemptToModify[letterIndex + 1] }
-  //       currentLetterToModify.letter = ''
-  //       currentLetterToModify.isFill = false
-  //     }
+      //Current attempt
+      const currentAttemptToModify = [...allAttempts[attemptsPos]]
+      // if (!currentAttemptToModify[letterIndex]) return allAttempts;
 
-  //     //Modifying current attempts with the new changes on letter
-  //     currentAttemptToModify[deleted ? letterIndex + 1 : letterIndex] = currentLetterToModify
+      let currentLetterToModify: AttemptLetter
 
-  //     //Pushing the attempt modified into its position
-  //     allAttempts[attempsPos] = currentAttemptToModify
+      //Modifying properties of letter
+      if (!deleted) {
+        currentLetterToModify = { ...currentAttemptToModify[letterIndex] }
+        currentLetterToModify.letter = myWord.charAt(letterIndex)
+        currentLetterToModify.isFill = true
+      } else {
+        currentLetterToModify = { ...currentAttemptToModify[letterIndex + 1] }
+        currentLetterToModify.letter = ''
+        currentLetterToModify.isFill = false
+      }
 
-  //     return allAttempts
-  //   })
+      //Modifying current attempts with the new changes on letter
+      currentAttemptToModify[deleted ? letterIndex + 1 : letterIndex] = currentLetterToModify
 
-  //   prevMyWord.current = myWord
+      //Pushing the attempt modified into its position
+      allAttempts[attemptsPos] = currentAttemptToModify
 
-  // }, [myWord, randomWord.length, attempsPos])
+      return allAttempts
+    })
+
+    prevMyWord.current = myWord
+
+  }, [myWord, randomWord.length, attemptsPos])
 
   return (
     <div>
@@ -189,6 +182,7 @@ export default function App() {
 
       <AllAttemptsWords attempts={attempts} />
 
+      {/*Set Key By Button*/}
       <KeyPressedContext.Provider value={{ key, setKey }}>
         <Keyboard />
       </KeyPressedContext.Provider>
