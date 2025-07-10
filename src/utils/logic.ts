@@ -1,4 +1,4 @@
-import words from '../data/words_spanish.json'
+import words from '../data/words_english.json'
 
 
 export const generateRandomWord = (letters: number) => {
@@ -28,4 +28,12 @@ export const removeLastWord = (word: string) => {
   const wordSplited = word.split('')
   wordSplited.pop()
   return wordSplited.join('')
+}
+
+export function replaceOneWithSpace(arr: string[], value: string) {
+  const index = arr.indexOf(value);
+  if (index !== -1) {
+    arr[index] = ' ';
+  }
+  return arr;
 }
